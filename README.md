@@ -8,7 +8,9 @@ This mobile app lets users set goals and create plans! Users can invite friends 
 The PostgreSQL backend, served up through Supabase, will keep track of basic data such as users, their associated list of plans, and the progress markers for each plan.
 
 ## System Design: 
+![image](https://github.com/user-attachments/assets/4d01817f-cb6e-4182-b640-7af73f68a0c5)
 
+The system serves up the frontend mobile app using Expo React Native for the client to interact with. The backend uses Supabase (Postgre database, Auth, Realtime) for the backend. When the client logs in, Auth handles their authorization and updates the frontend so the client can view their other screens.
 
 ## UX Design:
 ![image](https://github.com/user-attachments/assets/2ecd695c-0e5e-4bf6-a921-f6d86a7b697b)
