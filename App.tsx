@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import Auth from "./components/Auth";
-import Account from "./components/Account";
 import { EnrollMFA } from "./components/EnrollMFA";
 import { View, ActivityIndicator } from "react-native";
 import { Session } from "@supabase/supabase-js";
+import { NavigationContainer } from "@react-navigation/native";
+import HomeTabs from "./navigation/HomeTabs"; // 👈 Your new tab navigator
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -47,16 +48,18 @@ export default function App() {
 
   if (loading) return <ActivityIndicator />;
 
-  if (!session) return <Auth />;
-
-  if (!mfaEnrolled) {
-    return (
-      <EnrollMFA
-        onEnrolled={() => setMfaEnrolled(true)}
-        onCancelled={() => supabase.auth.signOut()}
-      />
-    );
-  }
-
-  return <Account key={session.user.id} session={session} />;
+  return (
+    <NavigationContainer>
+      {!session ? (
+        <Auth />
+      ) : !mfaEnrolled ? (
+        <EnrollMFA
+          onEnrolled={() => setMfaEnrolled(true)}
+          onCancelled={() => supabase.auth.signOut()}
+        />
+      ) : (
+        <HomeTabs />
+      )}
+    </NavigationContainer>
+  );
 }
