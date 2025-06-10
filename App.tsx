@@ -58,7 +58,7 @@ export default function App() {
           onCancelled={() => supabase.auth.signOut()}
         />
       ) : (
-        <HomeTabs />
+        <HomeTabs session={session} />
       )}
     </NavigationContainer>
   );

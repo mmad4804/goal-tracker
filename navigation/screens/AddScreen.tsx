@@ -18,13 +18,7 @@ type Plan = {
   title: string;
 };
 
-const mockPlans = [
-  { plan_id: "1", title: "Morning Routine" },
-  { plan_id: "2", title: "Workout Plan" },
-  { plan_id: "3", title: "Study Schedule" },
-];
-
-export default function HomeScreen() {
+export default function AddScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [plans, setPlans] = React.useState<Plan[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -42,27 +36,9 @@ export default function HomeScreen() {
     fetchPlans();
   }, []);
 
-  const renderItem = ({ item }: { item: Plan }) => (
-    <TouchableOpacity
-      style={styles.planItem}
-      onPress={() =>
-        navigation.navigate("PlanDetails", { planId: item.plan_id })
-      }
-    >
-      <Text style={styles.planTitle}>{item.title}</Text>
-      <Ionicons name="chevron-forward" size={20} color="#5e3ea1" />
-    </TouchableOpacity>
-  );
-
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Recent Plans</Text>
-      <FlatList
-        data={plans}
-        keyExtractor={(item) => item.plan_id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+      <Text style={styles.header}>Create a New Plan</Text>
     </View>
   );
 }
@@ -79,25 +55,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#5e3ea1",
     marginBottom: 20,
-  },
-  list: {
-    paddingBottom: 20,
-  },
-  planItem: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 2,
-  },
-  planTitle: {
-    fontSize: 16,
-    color: "#333",
   },
 });
