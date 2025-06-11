@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "../../lib/supabase";
 import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../screens/types/navigation";
 
 export default function AddScreen() {
   const [title, setTitle] = useState("");
@@ -21,6 +23,9 @@ export default function AddScreen() {
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [creator_id, setCreatorId] = useState<string | null>(null);
+
+  type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+  const navigation = useNavigation<NavigationProp>();
 
   const handleSubmit = async () => {
     if (!title || !description) {
@@ -56,6 +61,8 @@ export default function AddScreen() {
       setDescription("");
       setStartDate(new Date());
       setEndDate(new Date());
+
+      navigation.navigate("Tabs", { screen: "Home" }); // Navigate back to Home screen after submission
     }
   };
 

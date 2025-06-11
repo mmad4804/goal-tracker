@@ -1,4 +1,10 @@
 export type RootStackParamList = {
-  Tabs: undefined;
+  Tabs: { screen?: keyof TabParamList };
   PlanDetails: { planId: string };
+};
+
+export type TabParamList = {
+  Home: undefined;
+  Add: undefined;
+  Settings: undefined;
 };

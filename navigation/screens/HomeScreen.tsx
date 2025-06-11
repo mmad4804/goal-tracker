@@ -1,16 +1,11 @@
-import React, { use } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import React, { useCallback } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./types/navigation";
 import { supabase } from "../../lib/supabase";
+import { SwipeListView } from "react-native-swipe-list-view";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Tabs">;
 type Plan = {
@@ -18,29 +13,39 @@ type Plan = {
   title: string;
 };
 
-const mockPlans = [
-  { plan_id: "1", title: "Morning Routine" },
-  { plan_id: "2", title: "Workout Plan" },
-  { plan_id: "3", title: "Study Schedule" },
-];
-
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [plans, setPlans] = React.useState<Plan[]>([]);
   const [loading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    const fetchPlans = async () => {
-      const { data, error } = await supabase.from("plans").select("*");
-      if (error) {
-        console.error("Error fetching plans:", error.message);
-      } else {
-        setPlans(data);
-      }
-      setLoading(false);
-    };
-    fetchPlans();
-  }, []);
+  const fetchPlans = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("plans").select("*");
+    if (error) {
+      console.error("Error fetching plans:", error.message);
+    } else {
+      setPlans(data);
+    }
+    setLoading(false);
+  };
+
+  const deletePlan = async (planId: string) => {
+    const { error } = await supabase
+      .from("plans")
+      .delete()
+      .eq("plan_id", planId);
+    if (error) {
+      console.error("Error deleting plan:", error.message);
+    } else {
+      setPlans((prev) => prev.filter((plan) => plan.plan_id !== planId));
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPlans();
+    }, [])
+  );
 
   const renderItem = ({ item }: { item: Plan }) => (
     <TouchableOpacity
@@ -54,14 +59,28 @@ export default function HomeScreen() {
     </TouchableOpacity>
   );
 
+  const renderHiddenItem = ({ item }: { item: Plan }) => (
+    <View style={styles.rowBack}>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => deletePlan(item.plan_id)}
+      >
+        <Text style={styles.deleteText}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Recent Plans</Text>
-      <FlatList
+      <SwipeListView
         data={plans}
         keyExtractor={(item) => item.plan_id}
         renderItem={renderItem}
+        renderHiddenItem={renderHiddenItem}
+        rightOpenValue={-75}
         contentContainerStyle={styles.list}
+        disableRightSwipe
       />
     </View>
   );
@@ -99,5 +118,27 @@ const styles = StyleSheet.create({
   planTitle: {
     fontSize: 16,
     color: "#333",
+  },
+  rowBack: {
+    alignItems: "center",
+    backgroundColor: "#f2f2f7",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingRight: 15,
+    marginBottom: 12,
+    borderRadius: 12,
+  },
+  deleteButton: {
+    backgroundColor: "#ff3b30",
+    width: 75,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+  },
+  deleteText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
