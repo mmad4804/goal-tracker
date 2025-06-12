@@ -40,12 +40,16 @@ function Tabs({ session }: { session: Session }) {
 }
 
 export default function HomeTabs({ session }: { session: Session }) {
+  const PlanDetailsWrapper = (props: any) => (
+    <PlanDetailsScreen {...props} session={session} />
+  );
+
   return (
     <Stack.Navigator>
       <Stack.Screen name="Tabs" options={{ headerShown: false }}>
         {() => <Tabs session={session} />}
       </Stack.Screen>
-      <Stack.Screen name="PlanDetails" component={PlanDetailsScreen} />
+      <Stack.Screen name="PlanDetails" component={PlanDetailsWrapper} />
     </Stack.Navigator>
   );
 }
